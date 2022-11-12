@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require('cors')
 const bodyparser = require('body-parser');
 const mongoose = require('mongoose');
 
 const app = express();
-app.use(bodyparser.urlencoded({extended: true}));
+//app.use(bodyparser.urlencoded({extended: false}));
+app.use(cors())
+app.use(express.json())
 
 
 
@@ -63,6 +66,22 @@ Product.findById(id, (err, found) => {
     }
 })
 
+})
+
+
+app.post('/cart',async (req, res) =>{
+    
+        let documents;
+        console.log(req.body.ids);
+        try {
+            documents = await Product.find({
+                _id: { $in: req.body.ids },
+            }).select('-updatedAt -__v');
+        } catch (err) {
+            return next(CustomErrorHandler.serverError());
+        }
+        return res.json(documents);
+    
 })
 
 
